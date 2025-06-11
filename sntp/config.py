@@ -2,6 +2,7 @@ import sys
 
 from dataclasses import dataclass
 import json
+from json import JSONDecodeError
 from pathlib import Path
 
 
@@ -19,6 +20,8 @@ def read_config(path: Path) -> Config | None:
             return Config(offset_seconds=data["offset_seconds"],
                           upstream_server=data["upstream_server"],
                           listen_port=data["listen_port"])
+    except JSONDecodeError:
+        print("Bad JSON", file=sys.stderr)
     except KeyError:
         print("Incorrect config file content", file=sys.stderr)
     except FileNotFoundError:
