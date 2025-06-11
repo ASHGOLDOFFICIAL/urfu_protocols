@@ -7,9 +7,6 @@ from smtp.auth import read_auth_data
 from smtp.email import read_email_description
 from smtp.sender import EmailSender
 
-_SERVER = "smtp.gmail.com"
-_PORT = 587
-
 
 def _main(args: argparse.Namespace):
     email = read_email_description(args.config)
@@ -20,7 +17,7 @@ def _main(args: argparse.Namespace):
         sys.exit(1)
 
     sender = EmailSender(auth.username, auth.password,
-                         server=_SERVER, port=_PORT)
+                         server=auth.server, port=auth.port)
     sender.send(email)
 
 
