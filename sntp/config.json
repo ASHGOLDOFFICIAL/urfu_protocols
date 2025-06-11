@@ -1,0 +1,5 @@
+{
+  "offset_seconds": 60,
+  "upstream_server": "pool.ntp.org",
+  "listen_port": 123
+}
