@@ -3,7 +3,7 @@ import sys
 import argparse
 import pathlib
 
-from smtp.auth import read_auth_data
+from utils.auth import read_auth_data
 from smtp.email import read_email_description
 from smtp.sender import EmailSender
 
