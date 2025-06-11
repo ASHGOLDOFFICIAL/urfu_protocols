@@ -1,0 +1,10 @@
+{
+  "subject": "Test/Проверка",
+  "recipients": [
+    "koyir83959@2mik.com"
+  ],
+  "content": "./test/content.txt",
+  "attachments": [
+    "./test/test.txt"
+  ]
+}
