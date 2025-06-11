@@ -1,26 +1,37 @@
+import enum
+
 import argparse
 import ipaddress
 from ipaddress import IPv4Address
+from tabulate import tabulate
+from port_scanner.detector import DetectionResult, ProtocolDetector
 
-from port_scanner.scanner import PortScanner
+
+class Protocol(enum.StrEnum):
+    TCP = "tcp"
+    UDP = "udp"
 
 
 def _main(args: argparse.Namespace):
     try:
         dest: IPv4Address = IPv4Address(args.ip)
-    except ipaddress.AddressValueError as e:
-        print("Incorrect IPv4 address")
-        exit(1)
+    except ipaddress.AddressValueError:
+        parser.error("Invalid IPv4 address.")
     start: int = args.port_start
     end: int = args.port_end
 
-    port_scanner = PortScanner()
-    ports = []
-    if args.protocol == "tcp":
-        ports = port_scanner.open_tcp_ports(dest, start, end)
-    elif args.protocol == "udp":
-        ports = port_scanner.open_udp_ports(dest, start, end)
-    print(ports)
+    protocol_detector = ProtocolDetector(args.timeout)
+    protocols: dict[int, DetectionResult] = {}
+
+    if args.protocol == Protocol.TCP:
+        protocols = protocol_detector.detect_tcp_protocols(dest, start, end)
+    elif args.protocol == Protocol.UDP:
+        protocols = protocol_detector.detect_udp_protocols(dest, start, end)
+    
+    result = [(port, protocol.name) for port, protocol in protocols.items()]
+    t: str = tabulate(sorted(result, key=lambda x: x[0]),
+                      headers=["port", "protocol"])
+    print(t)
 
 
 if __name__ == "__main__":
@@ -30,7 +41,8 @@ if __name__ == "__main__":
     parser.add_argument(
         "protocol",
         type=str,
-        choices=["tcp", "udp"],
+        choices=[str(protocol) for protocol in Protocol],
+        help="Protocol to use"
     )
     parser.add_argument(
         "ip",
@@ -46,5 +58,11 @@ if __name__ == "__main__":
         "port_end",
         type=int,
         help="Port range upper bound (non-inclusive)"
+    )
+    parser.add_argument(
+        "--timeout", "-t",
+        type=float,
+        default=0.5,
+        help="How long to wait for a reply"
     )
     _main(parser.parse_args())

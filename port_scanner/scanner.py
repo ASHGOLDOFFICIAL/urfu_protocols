@@ -7,7 +7,7 @@ from typing import Callable
 
 class PortScanner:
     def __init__(self,
-                 timeout: float = 0.1,
+                 timeout: float = 0.3,
                  max_workers: int = 100):
         self._timeout = timeout
         self._workers = max_workers
