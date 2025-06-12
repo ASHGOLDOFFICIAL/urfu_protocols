@@ -2,7 +2,6 @@ import pathlib
 import sys
 
 import socket
-from socket import SocketIO
 import ssl
 from typing import BinaryIO, Callable
 
