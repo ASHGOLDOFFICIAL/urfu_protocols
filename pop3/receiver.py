@@ -17,7 +17,7 @@ class EmailReceiver:
         self._password = password
 
     def list(self):
-        def _action(sock: SocketIO):
+        def _action(sock: BinaryIO):
             list_response = self._send(sock,
                                        'LIST',
                                        multiline=True)
@@ -26,7 +26,7 @@ class EmailReceiver:
         self._session(_action)
 
     def top(self, index: int, lines: int):
-        def _action(sock: SocketIO):
+        def _action(sock: BinaryIO):
             headers = self._send(sock,
                                  f'TOP {index} {lines}',
                                  multiline=True)
@@ -35,11 +35,11 @@ class EmailReceiver:
         self._session(_action)
 
     def retrieve(self, index: int, outfile: pathlib.Path):
-        def _action(sock: SocketIO):
+        def _action(sock: BinaryIO):
             message = self._send(sock,
                                  f'RETR {index}',
                                  multiline=True)
-            with open(outfile, "wb") as f:
+            with open(outfile, "w") as f:
                 f.write(message)
 
         self._session(_action)
@@ -55,15 +55,15 @@ class EmailReceiver:
                 action(ssl_sock)
                 self._send(ssl_sock, 'QUIT')
 
-    def _authenticate(self, sock: SocketIO):
+    def _authenticate(self, sock: BinaryIO):
         self._send(sock, f'USER {self._username}')
         self._send(sock, f'PASS {self._password}')
 
-    def _readline(self, sock: SocketIO) -> str:
+    def _readline(self, sock: BinaryIO) -> str:
         line = sock.readline()
         return line.decode(errors='ignore')
 
-    def _readlines(self, sock: SocketIO) -> str:
+    def _readlines(self, sock: BinaryIO) -> str:
         lines = []
         while True:
             line = sock.readline()
@@ -73,7 +73,7 @@ class EmailReceiver:
         response = b''.join(lines).decode(errors='ignore')
         return response
 
-    def _send(self, sock: SocketIO, cmd: str, multiline: bool = False) -> str:
+    def _send(self, sock: BinaryIO, cmd: str, multiline: bool = False) -> str:
         sock.write((cmd + '\r\n').encode())
         sock.flush()
         return self._readlines(sock) if multiline else self._readline(sock)
