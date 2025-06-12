@@ -4,7 +4,7 @@ import argparse
 import ipaddress
 from ipaddress import IPv4Address
 from tabulate import tabulate
-from port_scanner.detector import DetectionResult, ProtocolDetector
+from ports.detector import DetectionResult, ProtocolDetector
 
 
 class Protocol(enum.StrEnum):
